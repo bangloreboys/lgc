@@ -15,15 +15,24 @@ contract ContractLG {
     string contractDescription;
 
     // constructor
+    //function ContractLG(string _title, string _status, string _commdate, string _tenure, string _warranty, string _eyaddress, string _partyaddress, string _contdesc) public {
     function ContractLG() public {
         title = "Contract for Landing Gears for B777 Fleet within Etihad";
+        //title = _title;
         status = "INITIATED";
+        //status = _status;
         commencementDate = "DD-MM-20YY";
+        //commencementDate = _commdate;
         tenure = "10 years";
+        //tenure = _tenure;
         warranty = "5 years";
+        //warranty = _warranty;
         eyAddress = "Etihad Airways P.J.S.C.,POB 35566,Abu Dhabi,United Arab Emirates.";
+        //eyAddress = _eyaddress;
         partyAddress = "Star Gears, Gears Street, P.O Box 162738, Machines";
+        //partyAddress = _partyaddress;
         contractDescription = "This is the first version of the contract";
+        //contractDescription = _contdesc;
     }
 
     // getter functions
