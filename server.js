@@ -27,9 +27,10 @@ web3.setProvider(new Web3.providers.HttpProvider(providerLocation));
  * 0x2e2d10b41b7c8ddb995568a87185428d9a513ead
  * 0xb9a219631aed55ebc3d998f17c3840b7ec39c0cc
  * 0x02e871627967d7c4586fcf2174ce7ac2c29f4ead
+ * 0xb9a219631aed55ebc3d998f17c3840b7ec39c0cc
  * 
  */
-var contractAddress = "0x02e871627967d7c4586fcf2174ce7ac2c29f4ead";
+var contractAddress = "0xb9a219631aed55ebc3d998f17c3840b7ec39c0cc";
 
 //var input = fs.readFileSync('./contracts/ContractLG.sol').toString();
 //console.log(input);
