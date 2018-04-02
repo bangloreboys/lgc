@@ -44,6 +44,38 @@
                 "json"
                 );
 			});
+
+			//btngetcontract
+			$("#btngetcontract").click(function() {
+				alert("getting contract");
+				$.post("/getcontract", 
+				{
+					
+                },
+                function(data,status){
+					alert("Title: " + data.title + " Status: " + data.status);
+					//$("#txttitle").val("New title to be setup");
+					//$("#txtstatus").val(data.status);
+				},
+                "json"
+                );
+			});
+
+			//btngettxns
+			$("#btngettxns").click(function() {
+				alert("getting transactions");
+				$.post("/getTransactions", 
+				{
+					
+                },
+                function(data,status){
+					alert(status);
+					//$("#txttitle").val("New title to be setup");
+					//$("#txtstatus").val(data.status);
+				},
+                "json"
+                );
+			});
         });
         </script>
 
@@ -138,7 +170,9 @@ contract data
 
 
 							<div class="col-md-12">
-                                <input id="btnsubmitcontract" type="submit" class="btn btn-success btn-send" value="Submit">
+								<input id="btnsubmitcontract" type="submit" class="btn btn-success btn-send" value="Submit">
+								<input id="btngetcontract" type="submit" class="btn btn-success btn-send" value="Get Contract">
+								<input id="btngettxns" type="submit" class="btn btn-success btn-send" value="Get Txns">
                                 <button id="tstbutton" type="button" >Test Post</button>
 
 							</div>

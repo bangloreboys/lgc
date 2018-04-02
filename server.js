@@ -16,16 +16,12 @@ app.use(express.static('public')); //public folder for static content
 
 //Defaults 7545 for Ganache , 8545 for testrpc/Ganache-cli
 //TODO: externalize to properties file
-var providerLocation = 'http://localhost:8545';
+var providerLocation = 'http://localhost:7545';
 
 web3.setProvider(new Web3.providers.HttpProvider(providerLocation));
 /**
  * 
  * contract addresses:
- * 
- * 0x8cdaf0cd259887258bc13a92c0a6da92698644c0
- * 0x2e2d10b41b7c8ddb995568a87185428d9a513ead
- * 0xb9a219631aed55ebc3d998f17c3840b7ec39c0cc
  * 0x02e871627967d7c4586fcf2174ce7ac2c29f4ead
  * 0xb9a219631aed55ebc3d998f17c3840b7ec39c0cc
  * 
@@ -274,36 +270,82 @@ app.post('/recordcontract', function (req, res) {
         console.log("ContractAddress: " + contractAddress);
         var theContract = new web3.eth.Contract(contractABI, contractAddress);
         console.log("Inside POST.."+ req.body.title);
-        theContract.methods.setTitle(req.body.title).call(function (err, res) {
+        theContract.methods.setTitle(req.body.title).send({from:'0x627306090abab3a6e1400e9345bc60c78a8bef57'}, function (err, res) {
             if (err) {
                 console.log('oh no...'+err.message);
             } else {
-                console.log('hurray...');
+                console.log('hurray...'+res);
             }
         });
-
-        var resObj = {};
-        theContract.methods.viewTitle().call(function (err, resp) {
-			if(err)
-				console.log("error in viewTitle: " + err.message);
-			else {
-				resObj.title = resp;
-				//console.log(resObj.title);
-			}	
-		}).then(console.log);
-        theContract.methods.viewStatus().call(function (err, resp) {
-			if(err)
-				console.log("error in viewStatus: " + err.message);
-			else {
-				resObj.status = resp;
-				//console.log(resObj.title);
-			}
-		}).then(console.log);
-
-		console.log(resObj.title + " - " + resObj.status);
-		res.json(resObj);
     }
 });
+
+app.post('/getTransactions', function (req, res) {
+	console.log('Fetching transactions for contract ' + contractAddress);
+	// Fetch all transaction logs with the specified address
+    var filter = web3.eth.Filter({fromBlock: 0, toBlock: 'latest', address: contractAddress}, function(error, result) {
+		// Get all entries
+		var results = filter.get(function(error, result){
+			if (!error)
+			  console.log("[I] Fetched all transactions sent or sent to " + contractAddress);
+			 else
+			  console.log("[E] An error has occurred " + error);
+		});
+	
+		var json_tuple;
+		// Iterate through the transactions in the logs 
+		for(var log in results) {
+			var log_tx_hash = log.transactionHash;
+			console.log("Transaction has : " + log_tx_hash);
+			// Lookup transaction with hash
+			var tx = web3.eth.getTransaction(log_tx_hash);
+			// Check the to and from addresses. We skip transactions unrelated to the current sender
+			if(tx.from === "0x627306090abab3a6e1400e9345bc60c78a8bef57") {
+				// Parse transaction data and check recipient
+				json_tuple = JSON.parse(tx.input);
+				if(field in json_tuple) {
+					//Do something with a field of the input data sent
+					// as a JSON object
+					console.log("We have found a transaction with data: " + json_tuple[[field]]);
+					console.log("----------------****-----------------");
+				}
+			}
+		}
+	});
+});
+
+
+app.post('/getcontract', function (req, res) {
+	console.log("Getting contract details...");
+	var resObj = {};
+	var theContract = new web3.eth.Contract(contractABI, contractAddress);
+    theContract.methods.viewTitle().call(function (err, resp1) {
+		if(err) {
+			console.log("error in viewTitle: " + err.message);
+			res.error(err);
+		}
+		else {
+			//set the title
+			resObj.title = resp1;
+			console.log(resObj.title);
+
+			//get status
+			theContract.methods.viewStatus().call(function (err, resp2) {
+				if(err)
+					console.log("error in viewStatus: " + err.message);
+				else {
+					resObj.status = resp2;
+					console.log(resObj.status);
+					
+					//set json with returned values.
+					console.log(resObj.title + " - " + resObj.status);
+					res.json(resObj);
+				}
+			});
+		}	
+	});
+});
+
 
 
 app.listen(PORT, function () {
