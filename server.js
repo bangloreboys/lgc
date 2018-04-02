@@ -22,11 +22,12 @@ web3.setProvider(new Web3.providers.HttpProvider(providerLocation));
 /**
  * 
  * contract addresses:
- * 0x02e871627967d7c4586fcf2174ce7ac2c29f4ead
- * 0xb9a219631aed55ebc3d998f17c3840b7ec39c0cc
+ * 0x8cdaf0cd259887258bc13a92c0a6da92698644c0
  * 
  */
-var contractAddress = "0xb9a219631aed55ebc3d998f17c3840b7ec39c0cc";
+var contractAddress = "0x8cdaf0cd259887258bc13a92c0a6da92698644c0";
+
+var forAccount = "0x627306090abab3a6e1400e9345bc60c78a8bef57";
 
 //var input = fs.readFileSync('./contracts/ContractLG.sol').toString();
 //console.log(input);
@@ -270,7 +271,7 @@ app.post('/recordcontract', function (req, res) {
         console.log("ContractAddress: " + contractAddress);
         var theContract = new web3.eth.Contract(contractABI, contractAddress);
         console.log("Inside POST.."+ req.body.title);
-        theContract.methods.setTitle(req.body.title).send({from:'0x627306090abab3a6e1400e9345bc60c78a8bef57'}, function (err, res) {
+        theContract.methods.setTitle(req.body.title).send({from:forAccount}, function (err, res) {
             if (err) {
                 console.log('oh no...'+err.message);
             } else {
@@ -280,6 +281,7 @@ app.post('/recordcontract', function (req, res) {
     }
 });
 
+/*
 app.post('/getTransactions', function (req, res) {
 	console.log('Fetching transactions for contract ' + contractAddress);
 	// Fetch all transaction logs with the specified address
@@ -313,7 +315,7 @@ app.post('/getTransactions', function (req, res) {
 		}
 	});
 });
-
+*/
 
 app.post('/getcontract', function (req, res) {
 	console.log("Getting contract details...");
@@ -351,3 +353,95 @@ app.post('/getcontract', function (req, res) {
 app.listen(PORT, function () {
     console.log('Server is started on port:', PORT);
 });
+
+app.post('/getTransactions', function (req, res) {
+	console.log('Fetching transactions for contract ' + contractAddress);
+	getTransactionsByAccount(forAccount);
+});
+
+
+function getTransactionsByAccount(myaccount, startBlockNumber, endBlockNumber) {
+	if (endBlockNumber == null) {
+		new web3.eth.getBlockNumber(function(err, res) {
+			if(err) {
+				console.log("Error while getting block number...");
+			} else {
+				endBlockNumber = res;
+				console.log("Using endBlockNumber: " + endBlockNumber);
+
+				if (startBlockNumber == null) {
+					startBlockNumber = 0;
+					//startBlockNumber = endBlockNumber - 1000;
+					console.log("Using startBlockNumber: " + startBlockNumber);
+				}
+				console.log("Searching for transactions to/from account \"" + myaccount + "\" within blocks "  + startBlockNumber + " and " + endBlockNumber);
+			  
+				for (var i = startBlockNumber; i <= endBlockNumber; i++) {
+					/*if (i % 1000 == 0) {
+						console.log("Searching block " + i);
+					}*/
+					var block = new web3.eth.getBlock(i, true, function(err, resp) {
+						if(err) {
+							console.log("Error while getting a block...");
+						} else {
+							console.log("Printing block: " + resp);
+							if (resp != null && resp.transactions != null) {
+								resp.transactions.forEach( function(e) {
+									//if (myaccount == "*" || myaccount == e.from || myaccount == e.to) {
+										console.log("  tx hash          : " + e.hash + "\n"
+										+ "   nonce           : " + e.nonce + "\n"
+										+ "   blockHash       : " + e.blockHash + "\n"
+										+ "   blockNumber     : " + e.blockNumber + "\n"
+										+ "   transactionIndex: " + e.transactionIndex + "\n"
+										+ "   from            : " + e.from + "\n" 
+										+ "   to              : " + e.to + "\n"
+										+ "   value           : " + e.value + "\n"
+										+ "   time            : " + block.timestamp + " " + new Date(block.timestamp * 1000).toGMTString() + "\n"
+										+ "   gasPrice        : " + e.gasPrice + "\n"
+										+ "   gas             : " + e.gas + "\n"
+										+ "   input           : " + e.input);
+		
+										console.log("------------------*******------------------");
+										console.log("Contract: " + e.to);
+										console.log(web3.utils.toAscii(e.input));
+										console.log("------------------*******------------------");
+		
+										/*theContract = new web3.eth.Contract(contractABI, e.to);
+										var resObj = {};
+										theContract.methods.viewTitle().call(function (err, resp1) {
+											if(err) {
+												console.log("error in viewTitle: " + err.message);
+												//res.error(err);
+											}
+											else {
+												//set the title
+												resObj.title = resp1;
+												console.log(resObj.title);
+		
+												//get status
+												theContract.methods.viewStatus().call(function (err, resp2) {
+													if(err)
+														console.log("error in viewStatus: " + err.message);
+													else {
+														resObj.status = resp2;
+														console.log(resObj.status);
+														
+														//set json with returned values.
+														console.log(resObj.title + " - " + resObj.status);
+														//res.json(resObj);
+													}
+												});
+											}	
+										});
+										console.log("------------------*******------------------");
+										console.log("------------------*******------------------");*/
+									//}
+								})
+							}
+						}
+					});
+				}
+			}
+		});
+	}
+}
