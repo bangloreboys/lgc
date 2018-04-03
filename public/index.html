@@ -6,84 +6,109 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
 	<link href='https://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>
-    <link href='custom.css' rel='stylesheet' type='text/css'>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script>
-        $(document).ready(function(){
-            $("#tstbutton").click(function(){
-                // jQuery.post( url [, data ] [, success ] [, dataType ] )
-                $.post("/testpost",
-                {
-                  iatacode: "AUH",
-                  city: "Abu Dhabi v1.11"
-                },
-                function(data,status){
-                    alert("Name: " + data.firstname + " " + data.lastname + " aged " + data.age );
-                },
-                "json"
-                );
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script>
+		$(document).ready(function () {
+
+			// any auto load calls
+			/**
+			$.ajax("/api/airports", {
+				dataType: "json",
+				success: function (e, a, o) {
+					$.each(e, function (e, a) {
+						$("#from_arpt").append($("<option>", {
+							value: a.CountryCode + a.Code,
+							text: a.Name
+						})), $("#to_arpt").append($("<option>", {
+							value: a.CountryCode + a.Code,
+							text: a.Name
+						}))
+					})
+				},
+				error: function (e, a, o) {
+					console.log(o)
+				}
 			});
-			
-			$("#btnsubmitcontract").click(function() {
+
+			**/
+			//clear & set initial values in Msg Panel
+			$("#msgpanel").empty();
+			$("#msgpanel").append("Panel for updates");
+
+			$("#tstbutton").click(function () {
+				// jQuery.post( url [, data ] [, success ] [, dataType ] )
+				$.post("/testpost",
+					{
+						iatacode: "AUH",
+						city: "Abu Dhabi v1.11"
+					},
+					function (data, status) {
+						alert("Name: " + data.firstname + " " + data.lastname + " aged " + data.age);
+					},
+					"json"
+				);
+			});
+
+			$("#btnsubmitcontract").click(function () {
 				alert("submitting contract");
-				$.post("/recordcontract", 
-				{
-					title: $("#txttitle").val()
-					/*,
-					status: $("#txtstatus").val(),
-					commdate: $("#txtcommencementdate").val(),
-					tenure: $("#txttenure").val(),
-					wardetails: $("#txtwarranty").val(),
-					eyaddress: $("#txteyaddress").val(),
-					contraddress: $("#txtparty").val(),
-					contrscope: $("#txtdesc").val()*/
-                },
-                function(contract,status){
-					alert("Title: " + contract.title + " Status: " + contract.status);
-                },
-                "json"
-                );
+				$.post("/recordcontract",
+					{
+						title: $("#txttitle").val()
+						/*,
+						status: $("#txtstatus").val(),
+						commdate: $("#txtcommencementdate").val(),
+						tenure: $("#txttenure").val(),
+						wardetails: $("#txtwarranty").val(),
+						eyaddress: $("#txteyaddress").val(),
+						contraddress: $("#txtparty").val(),
+						contrscope: $("#txtdesc").val()*/
+					},
+					function (contract, status) {
+						alert("Title: " + contract.title + " Status: " + contract.status);
+					},
+					"json"
+				);
 			});
 
 			//btngetcontract
-			$("#btngetcontract").click(function() {
+			$("#btngetcontract").click(function () {
 				alert("getting contract");
-				$.post("/getcontract", 
-				{
-					
-                },
-                function(data,status){
-					alert(data);
-					alert("Title: " + data.title + " Status: " + data.status);
-					$("txttitle").val("New title to be setup");
-					$("txtstatus").val(data.status);
-				},
-                "json"
-                );
+				$.post("/getcontract",
+					{
+
+					},
+					function (data, status) {
+						alert(data);
+						alert("Title: " + data.title + " Status: " + data.status);
+						$("txttitle").val("New title to be setup");
+						$("txtstatus").val(data.status);
+					},
+					"json"
+				);
 			});
 
 			//btngettxns
-			$("#btngettxns").click(function() {
+			$("#btngettxns").click(function () {
 				alert("getting transactions");
-				$.post("/getTransactions", 
-				{
-					
-                },
-                function(data,status){
-					alert(status);
-					//$("#txttitle").val("New title to be setup");
-					//$("#txtstatus").val(data.status);
-				},
-                "json"
-                );
+				$.post("/getTransactions",
+					{
+
+					},
+					function (data, status) {
+						alert(status);
+						//$("#txttitle").val("New title to be setup");
+						//$("#txtstatus").val(data.status);
+					},
+					"json"
+				);
 			});
-        });
-        </script>
+		});
+	</script>
 
 </head>
 
 <body>
-<!-- ToDO ////
+	<!-- ToDO ////
 warranty, cope , tenure in a line
 description  to contract scope
 commercials - new entry
@@ -96,20 +121,25 @@ contract data
 
 			<div class="col-lg-8 col-lg-offset-2">
 
-				<h1>Etihad Engineering Contract </h1>
-
 				<form id="contact-form" role="form">
 					<div class="messages"></div>
 
 					<div class="controls">
 
 						<div class="row">
+							<div class="col-md-3">
+								<img src="eylogo.png">
+							</div>
+							<div class="col-md-9 container-fluid ">
+							</div>
+						</div>
+
+						<div class="row">
 							<div class="col-md-6">
 								<div class="form-group">
 									<label for="lbltitle">Contract Title</label>
-									<input id="txttitle" type="text" name="title" class="form-control" placeholder="Enter Contract title *" data-error="Title is required.">
+									<input id="txttitle" type="text" name="title" class="form-control" placeholder="Enter Contract title *">
 								</div>
-								<div class="help-block with-errors"></div>
 							</div>
 							<div class="col-md-6">
 								<div class="form-group">
@@ -118,6 +148,7 @@ contract data
 								</div>
 							</div>
 						</div>
+
 						<div class="row">
 							<div class="col-md-4">
 								<div class="form-group">
@@ -129,7 +160,7 @@ contract data
 								<div class="form-group">
 									<label for="lblTenure">Tenure</label>
 									<input id="txttenure" type="text" name="tenure" class="form-control" placeholder="Tenure">
-									<div class="help-block with-errors"></div>
+
 								</div>
 							</div>
 							<div class="col-md-4">
@@ -137,11 +168,11 @@ contract data
 									<label for="lblwarranty">Warranty Details</label>
 									<textarea id="txtwarranty" name="warranty" class="form-control" placeholder="Warranty details" rows="1"></textarea>
 									</textarea>
-									<div class="help-block with-errors"></div>
+								</div>
 							</div>
 						</div>
+
 						<div class="row">
-							
 							<div class="col-md-6">
 								<div class="form-group">
 									<label for="lbleyaddress">Etihad Address</label>
@@ -151,38 +182,44 @@ contract data
 							</div>
 
 							<div class="col-md-6">
-									<div class="form-group">
-										<label for="lblparty">Contracting Party Details</label>
-										<textarea id="txtparty" name="party" class="form-control" placeholder="Contract partry details" rows="1"></textarea>
-										</textarea>
-										<div class="help-block with-errors"></div>
-									</div>
-							</div>
+								<div class="form-group">
+									<label for="lblparty">Contracting Party Details</label>
+									<textarea id="txtparty" name="party" class="form-control" placeholder="Contract partry details" rows="1"></textarea>
+									</textarea>
 
+								</div>
+							</div>
+						</div>
+
+
+						<div class="row">
 							<div class="col-md-12">
 								<div class="form-group">
 									<label for="lbldesc">Contract Scope</label>
 									<textarea id="txtdesc" name="desc" class="form-control" placeholder="Contract Scope" rows="2"></textarea>
 									</textarea>
-									<div class="help-block with-errors"></div>
+
 								</div>
+							</div>
 						</div>
 
+						<div class="row">
 							<div class="col-md-12">
 								<input id="btnsubmitcontract" type="button" class="btn btn-success btn-send" value="Submit">
 								<input id="btngetcontract" type="button" class="btn btn-success btn-send" value="Get Contract">
 								<input id="btngettxns" type="button" class="btn btn-success btn-send" value="Get Txns">
-                                <button id="tstbutton" type="button" >Test Post</button>
-
+								<button id="tstbutton" type="button"  class="btn btn-dark" >Test Post</button>
 							</div>
 						</div>
+
 						<div class="row">
 							<div class="col-md-12">
-								<p class="text-muted">
-									<strong>*</strong> Mandatory fields.
-								</p>
+								<div id="msgpanel" class="alert alert-info">
+									Info Panel
+								</div>
 							</div>
 						</div>
+
 					</div>
 
 				</form>
@@ -190,10 +227,7 @@ contract data
 		</div>
 	</div>
 
-	<script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-	<script src="validator.js"></script>
-	<script src="contact.js"></script>
+
 </body>
 
 </html>
