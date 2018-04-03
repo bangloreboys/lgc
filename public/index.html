@@ -38,8 +38,8 @@
 					contraddress: $("#txtparty").val(),
 					contrscope: $("#txtdesc").val()*/
                 },
-                function(data,status){
-					alert("Title: " + data.title + " Status: " + data.status);
+                function(contract,status){
+					alert("Title: " + contract.title + " Status: " + contract.status);
                 },
                 "json"
                 );
@@ -53,9 +53,10 @@
 					
                 },
                 function(data,status){
+					alert(data);
 					alert("Title: " + data.title + " Status: " + data.status);
-					//$("#txttitle").val("New title to be setup");
-					//$("#txtstatus").val(data.status);
+					$("txttitle").val("New title to be setup");
+					$("txtstatus").val(data.status);
 				},
                 "json"
                 );

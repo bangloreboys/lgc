@@ -328,20 +328,51 @@ app.post('/getcontract', function (req, res) {
 		}
 		else {
 			//set the title
-			resObj.title = resp1;
-			console.log(resObj.title);
+			resObj.title = resp1; console.log(resObj.title);
 
 			//get status
 			theContract.methods.viewStatus().call(function (err, resp2) {
 				if(err)
 					console.log("error in viewStatus: " + err.message);
 				else {
-					resObj.status = resp2;
-					console.log(resObj.status);
+					resObj.status = resp2; console.log(resObj.status);
+
+					//get commencement date; get tenure; get warranty
+					theContract.methods.viewValidity().call(function (err, resp3) {
+						if(err)
+							console.log("error in viewValidity: " + err.message);
+						else {
+							resObj.commencedate = resp3[0].toString();
+							resObj.tenure = resp3[1].toString();
+							resObj.warranty = resp3[2].toString();
+							console.log(resObj.commencedate + "-" + resObj.tenure + "-" + resObj.warranty);
 					
-					//set json with returned values.
-					console.log(resObj.title + " - " + resObj.status);
-					res.json(resObj);
+							//get eyaddress; get partyaddress
+							theContract.methods.viewAddress().call(function (err, resp4) {
+								if(err)
+									console.log("error in viewAddress: " + err.message);
+								else {
+									resObj.eyaddress = resp4[0].toString();
+									resObj.partyaddress = resp4[1].toString();
+									console.log(resObj.eyaddress + "-" + resObj.partyaddress);
+
+									//get contractdescription
+									theContract.methods.viewDescription().call(function (err, resp5) {
+										if(err)
+											console.log("error in viewDescription: " + err.message);
+										else {
+											resObj.description = resp5;
+											console.log(resObj.description);
+
+	//set json with returned values.
+	console.log(resObj);
+	res.json(resObj);
+										}
+									});
+								}
+							});
+						}
+					});
 				}
 			});
 		}	
@@ -405,36 +436,6 @@ function getTransactionsByAccount(myaccount, startBlockNumber, endBlockNumber) {
 										console.log("Contract: " + e.to);
 										console.log(web3.utils.toAscii(e.input));
 										console.log("------------------*******------------------");
-		
-										/*theContract = new web3.eth.Contract(contractABI, e.to);
-										var resObj = {};
-										theContract.methods.viewTitle().call(function (err, resp1) {
-											if(err) {
-												console.log("error in viewTitle: " + err.message);
-												//res.error(err);
-											}
-											else {
-												//set the title
-												resObj.title = resp1;
-												console.log(resObj.title);
-		
-												//get status
-												theContract.methods.viewStatus().call(function (err, resp2) {
-													if(err)
-														console.log("error in viewStatus: " + err.message);
-													else {
-														resObj.status = resp2;
-														console.log(resObj.status);
-														
-														//set json with returned values.
-														console.log(resObj.title + " - " + resObj.status);
-														//res.json(resObj);
-													}
-												});
-											}	
-										});
-										console.log("------------------*******------------------");
-										console.log("------------------*******------------------");*/
 									//}
 								})
 							}
