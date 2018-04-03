@@ -4,6 +4,7 @@ const express = require('express');
 const Web3 = require('web3');
 const bodyParser = require('body-parser');
 var request = require("request");
+const abiDecoder = require('abi-decoder'); 
 
 //const solc = require('solc');
 //TODO: externalize to properties file
@@ -212,6 +213,8 @@ var contractABI = [
 	}
 ];
 
+abiDecoder.addABI(contractABI);
+
 app.get('/', function (req, res) {
 	res.sendFile('index.html');
 });
@@ -230,6 +233,18 @@ app.get('/accounts', function (req, res) {
 app.get('/txn/:txhash', function (req, res) {
 	web3.eth.getTransaction(req.params.txhash, function (err, txn) {
 		if (err == null) res.json(txn);
+	});
+
+});
+
+// to get transaction input data decoded of a Smart Contract Instance
+// works only on SmartContract setter method txns
+// txninput/0xd487d39ff423109187dc86423002d49a11de804b6c3a071815659d016f885805 
+app.get('/txninput/:txhash', function (req, res) {
+	web3.eth.getTransaction(req.params.txhash, function (err, txn) {
+		if (err == null) {
+			res.json( abiDecoder.decodeMethod(txn.input));
+		}
 	});
 
 });
@@ -267,20 +282,29 @@ app.post('/testpost', function (req, res) {
 	res.json(resObj);
 });
 
+// api to get contract instance details
+// 
+app.get('/api/contractinst', function (req, res) {
+
+	var contractinst = new web3.eth.Contract(contractABI, contractAddress);
+	res.json(contractinst);
+
+});
+
 
 // api to get txns at an address at rinkeby 
 // http://localhost:5050/api/txn/0x469f17e6534ad8d765403f46bf86740b4fb668dc
 app.get('/api/txn/:address', function (req, res) {
-    var address = req.params.address;
-    var api_key = "C2DBPWS7DTZDGEPBC34MWV8D9SCT31PE5E";
-    console.log('Fetching transactions for address ' + address);
-    var invokeurl = "http://api-rinkeby.etherscan.io/api?module=account&action=txlist&address=" + address + "&startblock=0&endblock=99999999&sort=asc&apikey=" + api_key;
-    request.get(invokeurl, function (error, response, body) {
-        if (error) {
-            return console.log(error);
-        }
-        res.json(JSON.parse(body));
-    });
+	var address = req.params.address;
+	var api_key = "C2DBPWS7DTZDGEPBC34MWV8D9SCT31PE5E";
+	console.log('Fetching transactions for address ' + address);
+	var invokeurl = "http://api-rinkeby.etherscan.io/api?module=account&action=txlist&address=" + address + "&startblock=0&endblock=99999999&sort=asc&apikey=" + api_key;
+	request.get(invokeurl, function (error, response, body) {
+		if (error) {
+			return console.log(error);
+		}
+		res.json(JSON.parse(body));
+	});
 });
 
 
