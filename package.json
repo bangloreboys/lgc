@@ -1,6 +1,6 @@
 {
-  "name": "airchain",
-  "version": "1.0.0",
+  "name": "lgc",
+  "version": "1.1.0",
   "description": "Blockchain application for EY hack",
   "main": "server.js",
   "scripts": {
@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/eyarch/airchain.git"
+    "url": "git+https://github.com/bangloreboys/lgc.git"
   },
   "author": "architecture@etihad",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/eyarch/airchain/issues"
+    "url": "https://github.com/bangloreboys/lgc/issues"
   },
-  "homepage": "https://github.com/eyarch/airchain#readme",
+  "homepage": "https://github.com/bangloreboys/lgc#readme",
   "devDependencies": {
     "nodemon": "^1.17.2"
   },
