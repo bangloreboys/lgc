@@ -3,6 +3,8 @@ const fs = require('fs');
 const express = require('express');
 const Web3 = require('web3');
 const bodyParser = require('body-parser');
+var request = require("request");
+
 //const solc = require('solc');
 //TODO: externalize to properties file
 const PORT = 5050;
@@ -17,17 +19,17 @@ app.use(express.static('public')); //public folder for static content
 //Defaults 7545 for Ganache , 8545 for testrpc/Ganache-cli
 //TODO: externalize to properties file
 var providerLocation = 'http://localhost:7545';
+var rinkebyLocation = "https://rinkeby.infura.io";
 
-web3.setProvider(new Web3.providers.HttpProvider(providerLocation));
+web3.setProvider(new Web3.providers.HttpProvider(rinkebyLocation));
 /**
  * 
  * contract addresses:
  * 0x8cdaf0cd259887258bc13a92c0a6da92698644c0
  * 
  */
-var contractAddress = "0x8cdaf0cd259887258bc13a92c0a6da92698644c0";
-
-var forAccount = "0x627306090abab3a6e1400e9345bc60c78a8bef57";
+var contractAddress = "0xe2dB8D5ED69D94fe01183DC3607aA80dC3e190C5";
+var forAccount = "0x469f17e6534ad8d765403f46bf86740b4fb668dc";
 
 //var input = fs.readFileSync('./contracts/ContractLG.sol').toString();
 //console.log(input);
@@ -211,74 +213,91 @@ var contractABI = [
 ];
 
 app.get('/', function (req, res) {
-    res.sendFile('index.html');
+	res.sendFile('index.html');
 });
 
 // ** JSON API URLS for front end ***
 
 // localhost:3000/accounts - get all accounts
 app.get('/accounts', function (req, res) {
-    web3.eth.getAccounts(function (err, accounts) {
-        if (err == null) res.json(accounts);
-    });
+	web3.eth.getAccounts(function (err, accounts) {
+		if (err == null) res.json(accounts);
+	});
 });
 
 // get a specific transaction
 // txn/0x0a41ec0ac9cbdb224ff5db91a90b030727788f9a3aebf191fc568aa4358582b5
 app.get('/txn/:txhash', function (req, res) {
-    web3.eth.getTransaction(req.params.txhash, function (err, txn) {
-        if (err == null) res.json(txn);
-    });
-    
+	web3.eth.getTransaction(req.params.txhash, function (err, txn) {
+		if (err == null) res.json(txn);
+	});
+
 });
 
 // test t
 // Rest API for endpoint localhost:3000/transaction
 app.get('/txcount', function (req, res) {
-    var obj = web3.eth.getBlockTransactionCount("latest")
-        .then(console.log);
-    res.send(JSON.stringify(obj));
+	var obj = web3.eth.getBlockTransactionCount("latest")
+		.then(console.log);
+	res.send(JSON.stringify(obj));
 
 });
 
 // /block - REST API to get a block  user /block/0 to get 0 block
 app.get('/block/:blocknum', function (req, res) {
-    web3.eth.getBlock(req.params.blocknum, function (error, block) {
-        if (!error) {
-            res.json(block);
-        } else {
-            console.error(error);
-        }
-    });
+	web3.eth.getBlock(req.params.blocknum, function (error, block) {
+		if (!error) {
+			res.json(block);
+		} else {
+			console.error(error);
+		}
+	});
 });
 
 // a sample Post Handler for JSON object submitted via post
 app.post('/testpost', function (req, res) {
-    console.log (req.body);
-    //can read as req.body.iatacode = "AUH";
+	console.log(req.body);
+	//can read as req.body.iatacode = "AUH";
 
-    // Preparing the object to be send back
-    var resObj =  {};
-    resObj.firstname = "John";
-    resObj.lastname = "Doe";
-    resObj.age = 33;
-    res.json(resObj);
+	// Preparing the object to be send back
+	var resObj = {};
+	resObj.firstname = "John";
+	resObj.lastname = "Doe";
+	resObj.age = 33;
+	res.json(resObj);
 });
 
+
+// api to get txns at an address at rinkeby 
+// http://localhost:5050/api/txn/0x469f17e6534ad8d765403f46bf86740b4fb668dc
+app.get('/api/txn/:address', function (req, res) {
+    var address = req.params.address;
+    var api_key = "C2DBPWS7DTZDGEPBC34MWV8D9SCT31PE5E";
+    console.log('Fetching transactions for address ' + address);
+    var invokeurl = "http://api-rinkeby.etherscan.io/api?module=account&action=txlist&address=" + address + "&startblock=0&endblock=99999999&sort=asc&apikey=" + api_key;
+    request.get(invokeurl, function (error, response, body) {
+        if (error) {
+            return console.log(error);
+        }
+        res.json(JSON.parse(body));
+    });
+});
+
+
 app.post('/recordcontract', function (req, res) {
-    if (req.method == 'POST') {
-        console.log("ABI: " + contractABI);
-        console.log("ContractAddress: " + contractAddress);
-        var theContract = new web3.eth.Contract(contractABI, contractAddress);
-        console.log("Inside POST.."+ req.body.title);
-        theContract.methods.setTitle(req.body.title).send({from:forAccount}, function (err, res) {
-            if (err) {
-                console.log('oh no...'+err.message);
-            } else {
-                console.log('hurray...'+res);
-            }
-        });
-    }
+	if (req.method == 'POST') {
+		console.log("ABI: " + contractABI);
+		console.log("ContractAddress: " + contractAddress);
+		var theContract = new web3.eth.Contract(contractABI, contractAddress);
+		console.log("Inside POST.." + req.body.title);
+		theContract.methods.setTitle(req.body.title).send({ from: forAccount }, function (err, res) {
+			if (err) {
+				console.log('oh no...' + err.message);
+			} else {
+				console.log('hurray...' + res);
+			}
+		});
+	}
 });
 
 /*
@@ -321,8 +340,8 @@ app.post('/getcontract', function (req, res) {
 	console.log("Getting contract details...");
 	var resObj = {};
 	var theContract = new web3.eth.Contract(contractABI, contractAddress);
-    theContract.methods.viewTitle().call(function (err, resp1) {
-		if(err) {
+	theContract.methods.viewTitle().call(function (err, resp1) {
+		if (err) {
 			console.log("error in viewTitle: " + err.message);
 			res.error(err);
 		}
@@ -332,24 +351,24 @@ app.post('/getcontract', function (req, res) {
 
 			//get status
 			theContract.methods.viewStatus().call(function (err, resp2) {
-				if(err)
+				if (err)
 					console.log("error in viewStatus: " + err.message);
 				else {
 					resObj.status = resp2; console.log(resObj.status);
 
 					//get commencement date; get tenure; get warranty
 					theContract.methods.viewValidity().call(function (err, resp3) {
-						if(err)
+						if (err)
 							console.log("error in viewValidity: " + err.message);
 						else {
 							resObj.commencedate = resp3[0].toString();
 							resObj.tenure = resp3[1].toString();
 							resObj.warranty = resp3[2].toString();
 							console.log(resObj.commencedate + "-" + resObj.tenure + "-" + resObj.warranty);
-					
+
 							//get eyaddress; get partyaddress
 							theContract.methods.viewAddress().call(function (err, resp4) {
-								if(err)
+								if (err)
 									console.log("error in viewAddress: " + err.message);
 								else {
 									resObj.eyaddress = resp4[0].toString();
@@ -358,15 +377,15 @@ app.post('/getcontract', function (req, res) {
 
 									//get contractdescription
 									theContract.methods.viewDescription().call(function (err, resp5) {
-										if(err)
+										if (err)
 											console.log("error in viewDescription: " + err.message);
 										else {
 											resObj.description = resp5;
 											console.log(resObj.description);
 
-	//set json with returned values.
-	console.log(resObj);
-	res.json(resObj);
+											//set json with returned values.
+											console.log(resObj);
+											res.json(resObj);
 										}
 									});
 								}
@@ -375,14 +394,14 @@ app.post('/getcontract', function (req, res) {
 					});
 				}
 			});
-		}	
+		}
 	});
 });
 
 
 
 app.listen(PORT, function () {
-    console.log('Server is started on port:', PORT);
+	console.log('Server is started on port:', PORT);
 });
 
 app.post('/getTransactions', function (req, res) {
@@ -393,8 +412,8 @@ app.post('/getTransactions', function (req, res) {
 
 function getTransactionsByAccount(myaccount, startBlockNumber, endBlockNumber) {
 	if (endBlockNumber == null) {
-		new web3.eth.getBlockNumber(function(err, res) {
-			if(err) {
+		new web3.eth.getBlockNumber(function (err, res) {
+			if (err) {
 				console.log("Error while getting block number...");
 			} else {
 				endBlockNumber = res;
@@ -405,37 +424,37 @@ function getTransactionsByAccount(myaccount, startBlockNumber, endBlockNumber) {
 					//startBlockNumber = endBlockNumber - 1000;
 					console.log("Using startBlockNumber: " + startBlockNumber);
 				}
-				console.log("Searching for transactions to/from account \"" + myaccount + "\" within blocks "  + startBlockNumber + " and " + endBlockNumber);
-			  
+				console.log("Searching for transactions to/from account \"" + myaccount + "\" within blocks " + startBlockNumber + " and " + endBlockNumber);
+
 				for (var i = startBlockNumber; i <= endBlockNumber; i++) {
 					/*if (i % 1000 == 0) {
 						console.log("Searching block " + i);
 					}*/
-					var block = new web3.eth.getBlock(i, true, function(err, resp) {
-						if(err) {
+					var block = new web3.eth.getBlock(i, true, function (err, resp) {
+						if (err) {
 							console.log("Error while getting a block...");
 						} else {
 							console.log("Printing block: " + resp);
 							if (resp != null && resp.transactions != null) {
-								resp.transactions.forEach( function(e) {
+								resp.transactions.forEach(function (e) {
 									//if (myaccount == "*" || myaccount == e.from || myaccount == e.to) {
-										console.log("  tx hash          : " + e.hash + "\n"
+									console.log("  tx hash          : " + e.hash + "\n"
 										+ "   nonce           : " + e.nonce + "\n"
 										+ "   blockHash       : " + e.blockHash + "\n"
 										+ "   blockNumber     : " + e.blockNumber + "\n"
 										+ "   transactionIndex: " + e.transactionIndex + "\n"
-										+ "   from            : " + e.from + "\n" 
+										+ "   from            : " + e.from + "\n"
 										+ "   to              : " + e.to + "\n"
 										+ "   value           : " + e.value + "\n"
 										+ "   time            : " + block.timestamp + " " + new Date(block.timestamp * 1000).toGMTString() + "\n"
 										+ "   gasPrice        : " + e.gasPrice + "\n"
 										+ "   gas             : " + e.gas + "\n"
 										+ "   input           : " + e.input);
-		
-										console.log("------------------*******------------------");
-										console.log("Contract: " + e.to);
-										console.log(web3.utils.toAscii(e.input));
-										console.log("------------------*******------------------");
+
+									console.log("------------------*******------------------");
+									console.log("Contract: " + e.to);
+									console.log(web3.utils.toAscii(e.input));
+									console.log("------------------*******------------------");
 									//}
 								})
 							}
