@@ -4,7 +4,7 @@
   "description": "Blockchain application for EY hack",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -16,13 +16,13 @@
     "url": "https://github.com/bangloreboys/lgc/issues"
   },
   "homepage": "https://github.com/bangloreboys/lgc#readme",
-  "devDependencies": {
-    "nodemon": "^1.17.2"
-  },
   "dependencies": {
     "abi-decoder": "^1.1.0",
     "express": "^4.16.3",
     "request": "^2.85.0",
     "web3": "^1.0.0-beta.33"
+  },
+  "engines": {
+    "node": "6.9.x"
   }
 }

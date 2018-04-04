@@ -35,6 +35,7 @@ web3.setProvider(new Web3.providers.HttpProvider(rinkebyLocation));
  */
 var contractAddress = "0xe2dB8D5ED69D94fe01183DC3607aA80dC3e190C5";
 var forAccount = "0x469f17e6534ad8d765403f46bf86740b4fb668dc";
+             
 
 //var input = fs.readFileSync('./contracts/ContractLG.sol').toString();
 //console.log(input);
