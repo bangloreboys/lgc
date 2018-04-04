@@ -1,3 +1,6 @@
+"use strict"
+// strict to support bluemix deployment
+
 // server.js
 const fs = require('fs');
 const express = require('express');
@@ -10,8 +13,8 @@ const abiDecoder = require('abi-decoder');
 //TODO: externalize to properties file
 const PORT = 5050;
 
-let web3 = new Web3();
-let app = express();
+var web3 = new Web3();
+var app = express();
 
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.json({ type: 'application/*+json' }));
