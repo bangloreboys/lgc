@@ -9,31 +9,56 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<script>
 		$(document).ready(function () {
+			var contList = [
+				{ "address": "0", "name": "Please select a contract" },
+				{ "address": "0xe2dB8D5ED69D94fe01183DC3607aA80dC3e190C5", "name": "B777 Contract" },
+				{ "address": "0x5066667073799d733e3513c0c8cecf4cc3a774bf", "name": "B787 Contract" }
+			];
+
+			$.each(contList, function (error, cont) {
+				$("#selcontract").append($("<option>", {
+					value: cont.address,
+					text: cont.name
+				}));
+			})
+
 
 			// any auto load calls
 			/**
-			$.ajax("/api/airports", {
-				dataType: "json",
-				success: function (e, a, o) {
-					$.each(e, function (e, a) {
-						$("#from_arpt").append($("<option>", {
-							value: a.CountryCode + a.Code,
-							text: a.Name
-						})), $("#to_arpt").append($("<option>", {
-							value: a.CountryCode + a.Code,
-							text: a.Name
-						}))
-					})
-				},
-				error: function (e, a, o) {
-					console.log(o)
-				}
-			});
+
+			if (txnobject.hasOwnProperty('input')) {
+    			// do stuff
+			}
 
 			**/
 			//clear & set initial values in Msg Panel
 			$("#msgpanel").empty();
-			$("#msgpanel").append("Panel for updates");
+			$("#msgpanel").append("Status panel");
+
+			$("#selcontract").change(function () {
+				var selcon = $("#selcontract option:selected").val();
+				if (selcon !== 0) {
+					$("#msgpanel").empty();
+					$("#msgpanel").append("Getting Contract Details ....");
+					$.post("/getcontract",
+						{
+							contaddr : selcon
+						},
+						function (data, status) {
+							//alert("Title: " + data.title + " Status: " + data.status);
+							$("#txttitle").val(data.title);
+							$("#txtstatus").val(data.status);
+							$("#txtcommencementdate").val(data.commencedate);
+							$("#txttenure").val(data.tenure);
+							$("#txtwarranty").val(data.warranty);
+							$("#txteyaddress").val(data.eyaddress);
+							$("#txtparty").val(data.partyaddress);
+							$("#txtdesc").val(data.description);
+						},
+						"json"
+					);
+				}
+			});
 
 			$("#tstbutton").click(function () {
 				// jQuery.post( url [, data ] [, success ] [, dataType ] )
@@ -72,16 +97,24 @@
 
 			//btngetcontract
 			$("#btngetcontract").click(function () {
-				alert("getting contract");
+				$("#msgpanel").empty();
+				$("#msgpanel").append("Getting Contract Details ....");
 				$.post("/getcontract",
 					{
 
 					},
 					function (data, status) {
-						alert(data);
-						alert("Title: " + data.title + " Status: " + data.status);
-						$("txttitle").val("New title to be setup");
-						$("txtstatus").val(data.status);
+						//alert("Title: " + data.title + " Status: " + data.status);
+						$("#txttitle").val(data.title);
+						$("#txtstatus").val(data.status);
+						$("#txtcommencementdate").val(data.commencedate);
+						$("#txttenure").val(data.tenure);
+						$("#txtwarranty").val(data.warranty);
+						$("#txteyaddress").val(data.eyaddress);
+						$("#txtparty").val(data.partyaddress);
+						$("#txtdesc").val(data.description);
+
+
 					},
 					"json"
 				);
@@ -89,18 +122,16 @@
 
 			//btngettxns
 			$("#btngettxns").click(function () {
-				alert("getting transactions");
-				$.post("/getTransactions",
-					{
+				$("#msgpanel").empty();
+				$("#msgpanel").append(" Getting contract transactions ...");
 
-					},
-					function (data, status) {
-						alert(status);
-						//$("#txttitle").val("New title to be setup");
-						//$("#txtstatus").val(data.status);
-					},
-					"json"
-				);
+				var contractAddress = "0xe2dB8D5ED69D94fe01183DC3607aA80dC3e190C5";
+				var url = "/api/txn/" + contractAddress;
+				$.get(url, function (data, status) {
+					console.log(data);
+					var panelstr = JSON.stringify(data);
+					$("#msgpanel").append(panelstr);
+				});
 			});
 		});
 	</script>
@@ -131,6 +162,15 @@ contract data
 								<img src="eylogo.png">
 							</div>
 							<div class="col-md-9 container-fluid ">
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-md-12">
+								<div class="form-group">
+									<label for="lbltitle">Select A Contract</label>
+									<select id="selcontract" class="form-control" name="selcontract"></select>
+								</div>
 							</div>
 						</div>
 
@@ -205,10 +245,14 @@ contract data
 
 						<div class="row">
 							<div class="col-md-12">
+								
 								<input id="btnsubmitcontract" type="button" class="btn btn-success btn-send" value="Submit">
-								<input id="btngetcontract" type="button" class="btn btn-success btn-send" value="Get Contract">
 								<input id="btngettxns" type="button" class="btn btn-success btn-send" value="Get Txns">
-								<button id="tstbutton" type="button"  class="btn btn-dark" >Test Post</button>
+								
+								<!--
+								<input id="btngetcontract" type="button" class="btn btn-success btn-send" value="Get Contract">
+								<button id="tstbutton" type="button" class="btn btn-dark">Test Post</button>
+								-->
 							</div>
 						</div>
 

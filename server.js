@@ -4,7 +4,7 @@ const express = require('express');
 const Web3 = require('web3');
 const bodyParser = require('body-parser');
 var request = require("request");
-const abiDecoder = require('abi-decoder'); 
+const abiDecoder = require('abi-decoder');
 
 //const solc = require('solc');
 //TODO: externalize to properties file
@@ -14,6 +14,7 @@ let web3 = new Web3();
 let app = express();
 
 app.use(bodyParser.json()); // support json encoded bodies
+app.use(bodyParser.json({ type: 'application/*+json' }));
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 app.use(express.static('public')); //public folder for static content
 
@@ -243,7 +244,7 @@ app.get('/txn/:txhash', function (req, res) {
 app.get('/txninput/:txhash', function (req, res) {
 	web3.eth.getTransaction(req.params.txhash, function (err, txn) {
 		if (err == null) {
-			res.json( abiDecoder.decodeMethod(txn.input));
+			res.json(abiDecoder.decodeMethod(txn.input));
 		}
 	});
 
@@ -297,13 +298,40 @@ app.get('/api/contractinst', function (req, res) {
 app.get('/api/txn/:address', function (req, res) {
 	var address = req.params.address;
 	var api_key = "C2DBPWS7DTZDGEPBC34MWV8D9SCT31PE5E";
-	console.log('Fetching transactions for address ' + address);
+	console.log('>> Entered /api/txn/' + address);
 	var invokeurl = "http://api-rinkeby.etherscan.io/api?module=account&action=txlist&address=" + address + "&startblock=0&endblock=99999999&sort=asc&apikey=" + api_key;
 	request.get(invokeurl, function (error, response, body) {
 		if (error) {
 			return console.log(error);
 		}
-		res.json(JSON.parse(body));
+		var bodyObj = JSON.parse(body);
+		var results = bodyObj.result;
+
+		var encrInp;
+
+		// decode the transaction input
+		for (var item in results) {
+			encrInp = results[item].input;
+			results[item].input = abiDecoder.decodeMethod(encrInp);
+
+			// delete unwanted object attributes in response
+			delete results[item].from;
+			delete results[item].to;
+			delete results[item].blockHash;
+			delete results[item].gas;
+			delete results[item].gasPrice;
+			delete results[item].transactionIndex;
+			delete results[item].isError;
+			delete results[item].txreceipt_status;
+			delete results[item].nonce;
+			delete results[item].value;
+			delete results[item].cumulativeGasUsed;
+			delete results[item].gasUsed;
+			delete results[item].confirmations;
+		}
+		res.json(results);
+		console.log('<< Responded /api/txn/' + address + " with " + results.length + " transactions");
+
 	});
 });
 
@@ -363,6 +391,7 @@ app.post('/getTransactions', function (req, res) {
 app.post('/getcontract', function (req, res) {
 	console.log("Getting contract details...");
 	var resObj = {};
+	contractAddress = req.body.contaddr;
 	var theContract = new web3.eth.Contract(contractABI, contractAddress);
 	theContract.methods.viewTitle().call(function (err, resp1) {
 		if (err) {
@@ -433,6 +462,15 @@ app.post('/getTransactions', function (req, res) {
 	getTransactionsByAccount(forAccount);
 });
 
+function getTxDecodedInput(txhash) {
+	web3.eth.getTransaction(txhash, function (err, txn) {
+		if (err == null) {
+			return abiDecoder.decodeMethod(txn.input);
+		}
+		return "0";
+	});
+
+}
 
 function getTransactionsByAccount(myaccount, startBlockNumber, endBlockNumber) {
 	if (endBlockNumber == null) {
