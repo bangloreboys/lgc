@@ -1,18 +1,26 @@
 <html>
 
 <head>
-	<title>Etihad Contract Details</title>
+	<title>v3.0 Etihad Contracts </title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+	 crossorigin="anonymous">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+	 crossorigin="anonymous"></script>
+	<!-- Old bootstrap style sheet
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+	-->
+
 	<link href='https://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<script>
 		$(document).ready(function () {
 			var contList = [
 				{ "address": "0", "name": "Please select a contract" },
-				{ "address": "0xe2dB8D5ED69D94fe01183DC3607aA80dC3e190C5", "name": "B777 Contract" },
-				{ "address": "0x5066667073799d733e3513c0c8cecf4cc3a774bf", "name": "B787 Contract" }
+				{ "address": "0xe2dB8D5ED69D94fe01183DC3607aA80dC3e190C5", "name": "B777 Contract - EYCON 54589" },
+				{ "address": "0x5066667073799d733e3513c0c8cecf4cc3a774bf", "name": "B787 Contract - EYCON 67683" }
 			];
 
 			$.each(contList, function (error, cont) {
@@ -29,6 +37,8 @@
 			if (txnobject.hasOwnProperty('input')) {
     			// do stuff
 			}
+			 var str = moment("/Date(1365715800000)/").format("MM/DD/YYYY"); //json string
+  			console.log(str.toString());  //or use alert()
 
 			**/
 			//clear & set initial values in Msg Panel
@@ -42,7 +52,7 @@
 					$("#msgpanel").append("Getting Contract Details ....");
 					$.post("/getcontract",
 						{
-							contaddr : selcon
+							contaddr: selcon
 						},
 						function (data, status) {
 							//alert("Title: " + data.title + " Status: " + data.status);
@@ -58,20 +68,6 @@
 						"json"
 					);
 				}
-			});
-
-			$("#tstbutton").click(function () {
-				// jQuery.post( url [, data ] [, success ] [, dataType ] )
-				$.post("/testpost",
-					{
-						iatacode: "AUH",
-						city: "Abu Dhabi v1.11"
-					},
-					function (data, status) {
-						alert("Name: " + data.firstname + " " + data.lastname + " aged " + data.age);
-					},
-					"json"
-				);
 			});
 
 			$("#btnsubmitcontract").click(function () {
@@ -123,6 +119,12 @@
 			//btngettxns
 			$("#btngettxns").click(function () {
 				$("#msgpanel").empty();
+				$("#txnpanel").empty();
+
+				// <a type="button" class="btn btn-primary" title="Tooltip1"  target="_blank"  href="https://rinkeby.etherscan.io/tx/0x7d742703512ac32839fa3f3a01333ad361f7839e18b4491fe0b2b34b081504cf">Txn3 </a>
+				var butString1 = "<a type='button' class='btn btn-primary' data-toggle='tooltip' title='";
+				var butString3 = "</a>";
+
 				$("#msgpanel").append(" Getting contract transactions ...");
 
 				var contractAddress = "0xe2dB8D5ED69D94fe01183DC3607aA80dC3e190C5";
@@ -131,6 +133,15 @@
 					console.log(data);
 					var panelstr = JSON.stringify(data);
 					$("#msgpanel").append(panelstr);
+					var i = 0;
+					$.each(data, function (error, row) {
+						i++;
+						var tooltip = "Block: " + row.blockNumber + " txnHash: " + row.hash;
+						if (row.hasOwnProperty('input')) {
+							tooltip = tooltip + " Input : " + + JSON.stringify(row.input);
+						}
+						$("#txnpanel").append(butString1 + tooltip + "'> Tx " + i + butString3);
+					});
 				});
 			});
 		});
@@ -245,16 +256,31 @@ contract data
 
 						<div class="row">
 							<div class="col-md-12">
-								
+
 								<input id="btnsubmitcontract" type="button" class="btn btn-success btn-send" value="Submit">
 								<input id="btngettxns" type="button" class="btn btn-success btn-send" value="Get Txns">
-								
 								<!--
 								<input id="btngetcontract" type="button" class="btn btn-success btn-send" value="Get Contract">
 								<button id="tstbutton" type="button" class="btn btn-dark">Test Post</button>
 								-->
 							</div>
 						</div>
+
+						<!-- Empty row for separation-->
+						<div class="row">
+							<div class="col-md-12"> </div>
+						</div>
+
+						<div id=class="row">
+							<div id="txnpanel" class="col-md-12">
+								<button type="button" class="btn btn-secondary" data-toggle="tooltip" title="Tooltip1">Txn1 </button>
+								<button type="button" class="btn btn-secondary" data-toggle="tooltip" title="Tooltip1">Txn2 </button>
+								<a type="button" class="btn btn-primary" title="Tooltip1" target="_blank" href="https://rinkeby.etherscan.io/tx/0x7d742703512ac32839fa3f3a01333ad361f7839e18b4491fe0b2b34b081504cf">Txn3 </a>
+							</div>
+						</div>
+
+
+						<p>Debug</p>
 
 						<div class="row">
 							<div class="col-md-12">
@@ -263,6 +289,10 @@ contract data
 								</div>
 							</div>
 						</div>
+
+
+
+
 
 					</div>
 
