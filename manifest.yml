@@ -1,0 +1,9 @@
+applications:
+- path: .
+  memory: 128M
+  instances: 1
+  buildpack : nodejs_buildpack
+  domain: mybluemix.net
+  name: eychain
+  host: eychain
+  disk_quota: 512M
