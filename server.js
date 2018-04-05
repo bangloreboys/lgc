@@ -11,7 +11,8 @@ const abiDecoder = require('abi-decoder');
 
 //const solc = require('solc');
 //TODO: externalize to properties file
-const PORT = 5050;
+
+var PORT = process.env.PORT || 5050 ;  //for bluemix
 
 var web3 = new Web3();
 var app = express();
@@ -24,7 +25,9 @@ app.use(express.static('public')); //public folder for static content
 //Defaults 7545 for Ganache , 8545 for testrpc/Ganache-cli
 //TODO: externalize to properties file
 var providerLocation = 'http://localhost:7545';
-var rinkebyLocation = "https://rinkeby.infura.io";
+var rinkebyLocation = "https://rinkeby.infura.io/9PBP4aZ5wsWnylDXZIUp";
+var rinkebyRPCLocation = "https://rinkeby.infura.io/9PBP4aZ5wsWnylDXZIUp:8545";
+
 
 web3.setProvider(new Web3.providers.HttpProvider(rinkebyLocation));
 /**
@@ -220,6 +223,10 @@ var contractABI = [
 
 abiDecoder.addABI(contractABI);
 
+app.listen(PORT, function () {
+	console.log('Server is started on port:', PORT);
+});
+
 app.get('/', function (req, res) {
 	res.sendFile('index.html');
 });
@@ -340,13 +347,27 @@ app.get('/api/txn/:address', function (req, res) {
 });
 
 
-app.post('/recordcontract', function (req, res) {
+app.post('/recordcontract', function (req, res) {            
+	// TO BE DONE
+	// 1. index.html to sent the address of the Contract Instance against which txns are made
+	// 2. to get freaking sign the transaction.
+	
+	var account = web3.eth.accounts.privateKeyToAccount('0x678f26f38fad4f434bffd435435c3416afd627e280fad373e3e3ee8d78870a99');
+	web3.eth.accounts.wallet.add(account);  //adding account to wallet
+
 	if (req.method == 'POST') {
-		console.log("ABI: " + contractABI);
-		console.log("ContractAddress: " + contractAddress);
+		// console.log("ABI: " + contractABI);
+		console.log("ContractAddress: " + contractAddress + " Account address :" + account.address);
 		var theContract = new web3.eth.Contract(contractABI, contractAddress);
+
+		theContract.options.from = account.address ; // default from address
+		theContract.options.gasPrice = '2'; // default gas price in wei
+		theContract.options.gas = 5000000; // provide as fallback always 5M gas
+
 		console.log("Inside POST.." + req.body.title);
-		theContract.methods.setTitle(req.body.title).send({ from: forAccount }, function (err, res) {
+		theContract.methods.setTitle(req.body.title).send( function (err, res) {
+		//theContract.methods.setTitle(req.body.title).send({ from: account.address }, function (err, res) {
+			
 			if (err) {
 				console.log('oh no...' + err.message);
 			} else {
@@ -457,9 +478,6 @@ app.post('/getcontract', function (req, res) {
 
 
 
-app.listen(PORT, function () {
-	console.log('Server is started on port:', PORT);
-});
 
 app.post('/getTransactions', function (req, res) {
 	console.log('Fetching transactions for contract ' + contractAddress);

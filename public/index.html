@@ -28,6 +28,7 @@
 
 			//clear & set initial values in Msg Panel
 			$("#msgpanel").empty();
+			$("#txnpanel").empty();
 			$("#msgpanel").append("Status panel");
 			
 		
@@ -35,6 +36,7 @@
 				var selcon = $("#selcontract option:selected").val();
 				if (selcon !== 0) {
 					$("#msgpanel").empty();
+					$("#txnpanel").empty();
 					$("#msgpanel").append("Getting Contract Details ....");
 					$.post("/getcontract",
 						{
@@ -59,6 +61,8 @@
 			});
 
 			$("#btnsubmitcontract").click(function () {
+				$("#txnpanel").empty();
+				$("#msgpanel").empty();
 				$.post("/recordcontract",
 					{
 						title: $("#txttitle").val()
@@ -81,6 +85,7 @@
 			//btngetcontract
 			$("#btngetcontract").click(function () {
 				$("#msgpanel").empty();
+				$("#txnpanel").empty();
 				$("#msgpanel").append("Getting Contract Details ....");
 				$.post("/getcontract",
 					{
