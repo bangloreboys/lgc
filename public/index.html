@@ -13,25 +13,27 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<script>
 		$(document).ready(function () {
-			var contList = [
-				{ "address": "0", "name": "Please select a contract" },
-				{ "address": "0xe2dB8D5ED69D94fe01183DC3607aA80dC3e190C5", "name": "B777 Contract - EYCON 54589" },
-				{ "address": "0x5066667073799d733e3513c0c8cecf4cc3a774bf", "name": "B787 Contract - EYCON 67683" }
-			];
+			$.post("/loadcontracts",
+				{
+				},
+				function (contList, status) {
+					$.each(contList, function (error, cont) {
+						$("#selcontract").append($("<option>", {
+							value: cont.address,
+							text: cont.name
+						}));
+					})
+				}
+			);
 
-			$.each(contList, function (error, cont) {
-				$("#selcontract").append($("<option>", {
-					value: cont.address,
-					text: cont.name
-				}));
-			})
+
 
 			//clear & set initial values in Msg Panel
 			$("#msgpanel").empty();
 			$("#txnpanel").empty();
 			$("#msgpanel").append("Status panel");
-			
-		
+
+
 			$("#selcontract").change(function () {
 				var selcon = $("#selcontract option:selected").val();
 				if (selcon !== 0) {
@@ -63,17 +65,18 @@
 			$("#btnsubmitcontract").click(function () {
 				$("#txnpanel").empty();
 				$("#msgpanel").empty();
+				
 				$.post("/recordcontract",
 					{
-						title: $("#txttitle").val()
-						/*,
+						contaddr: $("#selcontract option:selected").val(),
+						title: $("#txttitle").val(),
 						status: $("#txtstatus").val(),
 						commdate: $("#txtcommencementdate").val(),
 						tenure: $("#txttenure").val(),
 						wardetails: $("#txtwarranty").val(),
 						eyaddress: $("#txteyaddress").val(),
 						contraddress: $("#txtparty").val(),
-						contrscope: $("#txtdesc").val()*/
+						contrscope: $("#txtdesc").val()
 					},
 					function (contract, status) {
 						alert("Title: " + contract.title + " Status: " + contract.status);
@@ -122,7 +125,7 @@
 
 				$("#msgpanel").append(" Getting contract transactions ...");
 
-				var contractAddress = "0xe2dB8D5ED69D94fe01183DC3607aA80dC3e190C5";
+				var contractAddress = $("#selcontract option:selected").val();
 				var url = "/api/txn/" + contractAddress;
 				$.get(url, function (data, status) {
 					//console.log(data);
@@ -140,7 +143,7 @@
 						var urlString = butString3 + row.hash + "'";
 
 						$("#txnpanel").append(butString1 + tooltip + urlString + "> Block " + row.blockNumber + "</a>&nbsp;");
-						
+
 					});
 				});
 			});
@@ -273,7 +276,7 @@ contract data
 
 						<div id=class="row">
 							<div id="txnpanel" class="col-md-12">
-							
+
 							</div>
 						</div>
 
