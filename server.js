@@ -559,7 +559,7 @@ app.post('/getcontract', function (req, res) {
 	theContract.methods.viewTitle().call(function (err, resp1) {
 		if (err) {
 			console.log("error in viewTitle: " + err.message);
-			res.error(err);
+			resp1.error(err);
 		}
 		else {
 			//set the title
