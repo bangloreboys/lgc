@@ -26,8 +26,6 @@
 				}
 			);
 
-
-
 			//clear & set initial values in Msg Panel
 			$("#msgpanel").empty();
 			$("#txnpanel").empty();
@@ -39,6 +37,7 @@
 				if (selcon !== 0) {
 					$("#msgpanel").empty();
 					$("#txnpanel").empty();
+					$("#contpanel").empty();
 					$("#msgpanel").append("Getting Contract Details ....");
 					$.post("/getcontract",
 						{
@@ -56,6 +55,7 @@
 							$("#txtdesc").val(data.description);
 							$("#msgpanel").empty();
 							$("#msgpanel").append("Contract Details Loaded !");
+							$("#contpanel").append("Contract Hash: " + selcon);
 						},
 						"json"
 					);
@@ -106,8 +106,6 @@
 						$("#txtdesc").val(data.description);
 						$("#msgpanel").empty();
 						$("#msgpanel").append("Loaded Contract Details Successfully");
-
-
 					},
 					"json"
 				);
@@ -173,16 +171,18 @@ contract data
 
 						<div class="row">
 							<div class="col-md-3">
-								<img src="eylogo.png">
+								<img src="etihadlogo.png">
 							</div>
 							<div class="col-md-9 container-fluid ">
 							</div>
 						</div>
 
+						<label for="lbltitle"><h4 class="alert alert-info">SMART CONTRACTS : Airplane Landing Gears (securely hosted on Blockchain)</h4></label>
+
 						<div class="row">
 							<div class="col-md-12">
 								<div class="form-group">
-									<label for="lbltitle"><h2 style="background-color:silver;" style="color:rgb(30, 83, 255);">SMART CONTRACTS: Airplane Landing Gears (securely hosted on Blockchain)</h2></label>
+									<label for="lblselcontract">Select Contract</label>
 									<select id="selcontract" class="form-control" name="selcontract"></select>
 								</div>
 							</div>
@@ -257,9 +257,9 @@ contract data
 							</div>
 						</div>
 
-
-						<p style="color:red;"><i>Contract Hash : 0x345ca3e014aaf5dca488057592ee47305d9b3e10</i></p>
-
+						<div>
+							<i><p id="contpanel" style="color:red;"></p></i>
+						</div>
 
 						<div class="row">
 							<div class="col-md-12">

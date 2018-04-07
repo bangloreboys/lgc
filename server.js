@@ -53,8 +53,8 @@ function prepareContractsList() {
 		console.log("Using contracts on local...");
 		contList = [
 			{ "address": "0", "name": "Please select a contract" },
-			{ "address": "0x345ca3e014aaf5dca488057592ee47305d9b3e10", "name": "A320 Contract - EYCON 54589" },
-			{ "address": "0xf25186b5081ff5ce73482ad761db0eb0d25abfbf", "name": "A380 Contract - EYCON 67683" }
+			{ "address": "0x8cdaf0cd259887258bc13a92c0a6da92698644c0", "name": "A320 Contract - EYCON 54589" },
+			{ "address": "0xf12b5dd4ead5f743c6baa640b0216200e89b60da", "name": "A380 Contract - EYCON 67683" }
 		];
 
 		forAccount = "";
