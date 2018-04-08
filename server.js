@@ -22,7 +22,7 @@ app.use(bodyParser.json({ type: 'application/*+json' }));
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 app.use(express.static('public')); //public folder for static content
 
-var useProvider = "local"; //set 'local' to use Ganache on local mache or 'remote' to use rinkeby or other provider
+var useProvider = "remote"; //set 'local' to use Ganache on local mache or 'remote' to use rinkeby or other provider
 
 //Defaults 7545 for Ganache , 8545 for testrpc/Ganache-cli
 //TODO: externalize to properties file
@@ -440,9 +440,6 @@ app.get('/api/txn/:address', function (req, res) {
 
 
 app.post('/recordcontract', function (req, res) {
-	// TO BE DONE
-	// 1. index.html to sent the address of the Contract Instance against which txns are made
-	// 2. to get freaking sign the transaction.
 	if (useProvider == 'local') {
 		contractAddress = req.body.contaddr;
 		forAccount = '0x627306090abaB3A6e1400e9345bC60c78a8BEf57';
