@@ -36,7 +36,7 @@ var contractAddress;
 
 if (useProvider == 'local') {
 	providerLocation = ganacheLocation;
-	forAccount = "0x627306090abaB3A6e1400e9345bC60c78a8BEf57";
+	forAccount = "0xf17f52151EbEF6C7334FAD080c5704D77216b732";
 } else {
 	providerLocation = rinkebyLocation;
 	forAccount = "0x469f17e6534ad8d765403f46bf86740b4fb668dc";
@@ -399,7 +399,7 @@ app.get('/api/txn/:address', function (req, res) {
 			//send the response back to the html code...
 			console.log(JSON.stringify(results));
 			res.json(results);
-			console.log('<< Responded ' + address + " with " + results9.length + " transactions");
+			console.log('<< Responded ' + address + " with " + results.length + " transactions");
 		});
 	} else {
 		var api_key = "C2DBPWS7DTZDGEPBC34MWV8D9SCT31PE5E";
