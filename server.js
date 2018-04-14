@@ -332,8 +332,17 @@ app.get('/api/contractinst', function (req, res) {
 });
 
 
+var completed = false;
+var results = [];
+var ii = 0;
+
+function sleep(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 function getTransactionsByAccount(myaccount, contradd, startBlockNumber, endBlockNumber) {
 	if (endBlockNumber == null) {
+		completed = false;
 		new web3.eth.getBlockNumber(function (err, res) {
 			if (err) {
 				console.log("Error while getting block number...");
@@ -347,8 +356,8 @@ function getTransactionsByAccount(myaccount, contradd, startBlockNumber, endBloc
 					console.log("Using startBlockNumber: " + startBlockNumber);
 				}
 				console.log("Searching for transactions to/from account \"" + myaccount + "\" within blocks " + startBlockNumber + " and " + endBlockNumber);
-				var results = [];
-				var ii = 0;
+				results = [];
+				ii = 0;
 				for (var i = startBlockNumber; i <= endBlockNumber; i++) {
 					/*if (i % 1000 == 0) {
 						console.log("Searching block " + i);
@@ -360,7 +369,7 @@ function getTransactionsByAccount(myaccount, contradd, startBlockNumber, endBloc
 							if (resp != null && resp.transactions != null) {
 								resp.transactions.forEach(function (e) {
 									if (myaccount == e.from || contradd == e.to) {
-										
+
 										delete e.nonce;
 										delete e.blockHash;
 										delete e.transactionIndex;
@@ -376,13 +385,11 @@ function getTransactionsByAccount(myaccount, contradd, startBlockNumber, endBloc
 										ii++;
 										console.log(e);
 									}
-								})
+								});
 							}
 						}
 					});
 				}
-
-				return results;
 			}
 		});
 	}
@@ -395,16 +402,16 @@ app.get('/api/txn/:address', function (req, res) {
 
 	if (useProvider == "local") {
 		console.log('Fetching transactions for contract ' + contractAddress);
-		
-		/*getTransactionsByAccount(forAccount, contractAddress, 0, null, function(status, results) {
-			//send the response back to the html code...
-			console.log(JSON.stringify(results));
-			res.json(results);
-			console.log('<< Responded ' + address + " with " + results9.length + " transactions");
-		});*/
 
-		var txns = getJsonFromFile("transactions.json");
-		res.json(txns);
+		getTransactionsByAccount(forAccount, contractAddress, 0, null, function(status, data) {
+			//send the response back to the html code...
+			console.log("Got the transactions as below...." + JSON.stringify(results));
+			res.json(results);
+			console.log('<< Responded ' + address + " with " + results.length + " transactions");
+		});
+
+		//var txns = getJsonFromFile("transactions.json");
+		//res.json(txns);
 
 	} else {
 		var api_key = "C2DBPWS7DTZDGEPBC34MWV8D9SCT31PE5E";
@@ -639,14 +646,14 @@ function getTxDecodedInput(txhash) {
 
 function readJsonFile(filepath, encoding) {
 	if (typeof (encoding) == 'undefined') {
-	  encoding = 'utf8';
+		encoding = 'utf8';
 	}
 	var file = fs.readFileSync(filepath, encoding);
 	return JSON.parse(file);
-  }
-  
-  function getJsonFromFile(file) {
+}
+
+function getJsonFromFile(file) {
 	var filepath = "public/" + file;
 	return readJsonFile(filepath);
-  }
+}
 
