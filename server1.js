@@ -36,7 +36,7 @@ var contractAddress;
 
 if (useProvider == 'local') {
 	providerLocation = ganacheLocation;
-	forAccount = "0xf17f52151EbEF6C7334FAD080c5704D77216b732";
+	forAccount = "0xC52335F57258283c548233bC1Ca1Dfc40754A9eE";
 } else {
 	providerLocation = rinkebyLocation;
 	forAccount = "0x469f17e6534ad8d765403f46bf86740b4fb668dc";
@@ -53,11 +53,11 @@ function prepareContractsList() {
 		console.log("Using contracts on local...");
 		contList = [
 			{ "address": "0", "name": "Please select a contract" },
-			{ "address": "0x8cdaf0cd259887258bc13a92c0a6da92698644c0", "name": "A320 Contract - EYCON 54589" },
-			{ "address": "0xf12b5dd4ead5f743c6baa640b0216200e89b60da", "name": "A380 Contract - EYCON 67683" }
+			{ "address": "0x0ba28e097654b0802750e6489fc70c023f1e0e4c", "name": "A320 Contract - EYCON 54589" },
+			{ "address": "0x3cdc14dcaba315bef59861bbf3e0f54d21c4452e", "name": "A380 Contract - EYCON 67683" }
 		];
 
-		forAccount = "0x627306090abaB3A6e1400e9345bC60c78a8BEf57";
+		forAccount = "0xC52335F57258283c548233bC1Ca1Dfc40754A9eE";
 	} else {
 		contList = [
 			{ "address": "0", "name": "Please select a contract" },
@@ -399,7 +399,7 @@ app.get('/api/txn/:address', function (req, res) {
 			//send the response back to the html code...
 			console.log(JSON.stringify(results));
 			res.json(results);
-			console.log('<< Responded ' + address + " with " + results.length + " transactions");
+			console.log('<< Responded ' + address + " with " + results9.length + " transactions");
 		});
 	} else {
 		var api_key = "C2DBPWS7DTZDGEPBC34MWV8D9SCT31PE5E";
@@ -444,7 +444,7 @@ app.get('/api/txn/:address', function (req, res) {
 app.post('/recordcontract', function (req, res) {
 	if (useProvider == 'local') {
 		contractAddress = req.body.contaddr;
-		forAccount = '0x627306090abaB3A6e1400e9345bC60c78a8BEf57';
+		//forAccount = '0x627306090abaB3A6e1400e9345bC60c78a8BEf57';
 		if (req.method == 'POST') {
 			// console.log("ABI: " + contractABI);
 			console.log("ContractAddress: " + contractAddress + " Account address :" + forAccount);
@@ -558,7 +558,7 @@ app.post('/getcontract', function (req, res) {
 	theContract.methods.viewTitle().call(function (err, resp1) {
 		if (err) {
 			console.log("error in viewTitle: " + err.message);
-			resp1.error(err);
+			//resp1.error(err);
 		}
 		else {
 			//set the title
