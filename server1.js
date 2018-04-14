@@ -395,12 +395,17 @@ app.get('/api/txn/:address', function (req, res) {
 
 	if (useProvider == "local") {
 		console.log('Fetching transactions for contract ' + contractAddress);
-		getTransactionsByAccount(forAccount, contractAddress, 0, null, function(status, results) {
+		
+		/*getTransactionsByAccount(forAccount, contractAddress, 0, null, function(status, results) {
 			//send the response back to the html code...
 			console.log(JSON.stringify(results));
 			res.json(results);
 			console.log('<< Responded ' + address + " with " + results9.length + " transactions");
-		});
+		});*/
+
+		var txns = getJsonFromFile("transactions.json");
+		res.json(txns);
+
 	} else {
 		var api_key = "C2DBPWS7DTZDGEPBC34MWV8D9SCT31PE5E";
 		console.log('>> Entered /api/txn/' + address);
@@ -630,4 +635,18 @@ function getTxDecodedInput(txhash) {
 	});
 
 }
+
+
+function readJsonFile(filepath, encoding) {
+	if (typeof (encoding) == 'undefined') {
+	  encoding = 'utf8';
+	}
+	var file = fs.readFileSync(filepath, encoding);
+	return JSON.parse(file);
+  }
+  
+  function getJsonFromFile(file) {
+	var filepath = "public/" + file;
+	return readJsonFile(filepath);
+  }
 

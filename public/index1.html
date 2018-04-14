@@ -126,16 +126,16 @@
 				var contractAddress = $("#selcontract option:selected").val();
 				var url = "/api/txn/" + contractAddress;
 				$.get(url, function (data, status) {
-					alert("On the browser..." + data);
+					//alert("On the browser..." + data);
 					//var panelstr = JSON.stringify(data);
 					//$("#msgpanel").append(panelstr);
 					var i = 0;
 					$.each(data, function (error, row) {
 						i++;
 						var dateString = new Date(row.timeStamp * 1000).toString();
-						var tooltip = dateString + "at Block: " + row.blockNumber + "";
+						var tooltip = dateString + " at Block: " + row.blockNumber + "";
 						if (row.hasOwnProperty('input')) {
-							tooltip = tooltip + " Txn Data : " + JSON.stringify(row.input.params);
+							tooltip = tooltip + " with Txn Data : " + JSON.stringify(row.input.params);
 						}
 						tooltip = tooltip + "'"; //closing quotes
 						var urlString = butString3 + row.hash + "'";
@@ -172,14 +172,14 @@ contract data
 						<div class="row">
 							<div class="col-md-3">
 								<img src="precisiongears_big.png"><br>
-								<div id="contracthash" class="col-md-12">0xC52335F57258283c548233bC1Ca1Dfc40754A9eE</div>
+								<div id="contracthash" style="color:red;" class="col-md-12">0xC52335F57258283c548233bC1Ca1Dfc40754A9eE</div>
 								<br>
 							</div>
 							<div class="col-md-9 container-fluid ">
 							</div>
 						</div>
 
-						<label for="lbltitle"><h4 class="alert alert-info">SMART CONTRACTS : Airplane Landing Gears (securely hosted on Blockchain)</h4></label>
+						<h4 class="alert alert-info" style="background-color:yellowgreen;"><label for="lbltitle" style="background-color:yellowgreen;">SMART CONTRACTS : Airplane Landing Gears (securely hosted on Blockchain)</label></h4>
 
 						<div class="row">
 							<div class="col-md-12">
@@ -277,11 +277,11 @@ contract data
 
 						<!-- Empty row for separation-->
 						<div class="row">
-							<div class="col-md-12"> </div>
+							<div class="col-md-12" style="background-color:yellowgreen;"> </div>
 						</div>
 
 						<div id=class="row">
-							<div id="txnpanel" class="col-md-12">
+							<div id="txnpanel" class="col-md-12" style="background-color:yellowgreen;">
 
 							</div>
 						</div>
@@ -291,7 +291,7 @@ contract data
 
 						<div class="row">
 							<div class="col-md-12">
-								<div id="msgpanel" class="alert alert-info">
+								<div id="msgpanel" class="alert alert-info" style="background-color:yellowgreen;">
 									Info Panel
 								</div>
 							</div>
