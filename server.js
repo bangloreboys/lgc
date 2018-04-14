@@ -403,15 +403,15 @@ app.get('/api/txn/:address', function (req, res) {
 	if (useProvider == "local") {
 		console.log('Fetching transactions for contract ' + contractAddress);
 
-		getTransactionsByAccount(forAccount, contractAddress, 0, null, function(status, data) {
+		/*getTransactionsByAccount(forAccount, contractAddress, 0, null, function(status, data) {
 			//send the response back to the html code...
 			console.log("Got the transactions as below...." + JSON.stringify(results));
 			res.json(results);
 			console.log('<< Responded ' + address + " with " + results.length + " transactions");
-		});
+		});*/
 
-		//var txns = getJsonFromFile("transactions.json");
-		//res.json(txns);
+		var txns = getJsonFromFile("transactions.json");
+		res.json(txns);
 
 	} else {
 		var api_key = "C2DBPWS7DTZDGEPBC34MWV8D9SCT31PE5E";
