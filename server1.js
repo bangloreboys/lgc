@@ -12,7 +12,7 @@ const abiDecoder = require('abi-decoder');
 //const solc = require('solc');
 //TODO: externalize to properties file
 
-var PORT = process.env.PORT || 5050;  //for bluemix
+var PORT = process.env.PORT || 6060;  //for bluemix
 
 var web3 = new Web3();
 var app = express();
@@ -359,22 +359,23 @@ function getTransactionsByAccount(myaccount, contradd, startBlockNumber, endBloc
 						} else {
 							if (resp != null && resp.transactions != null) {
 								resp.transactions.forEach(function (e) {
-									if (myaccount == e.from || contradd == e.to) {
-										
-										delete e.nonce;
-										delete e.blockHash;
-										delete e.transactionIndex;
-										delete e.value;
-										delete e.gasPrice;
-										delete e.gas;
-										var gotinput = "";
-										if (e.input != 'undefined') {
-											gotinput = abiDecoder.decodeMethod(e.input);
+									if (e.to != null) {
+										if (myaccount.ignoreCase == e.from.ignoreCase || contradd.ignoreCase == e.to.ignoreCase) {
+											delete e.nonce;
+											delete e.blockHash;
+											delete e.transactionIndex;
+											delete e.value;
+											delete e.gasPrice;
+											delete e.gas;
+											var gotinput = "";
+											if (e.input != 'undefined') {
+												gotinput = abiDecoder.decodeMethod(e.input);
+											}
+											e.input = gotinput;
+											results[ii] = e;
+											ii++;
+											console.log(JSON.stringify(e));
 										}
-										e.input = gotinput;
-										results[ii] = e;
-										ii++;
-										console.log(JSON.stringify(e));
 									}
 								})
 							}
@@ -395,8 +396,8 @@ app.get('/api/txn/:address', function (req, res) {
 
 	if (useProvider == "local") {
 		console.log('Fetching transactions for contract ' + contractAddress);
-		
-		getTransactionsByAccount(forAccount, contractAddress, 0, null, function(status, results) {
+
+		getTransactionsByAccount(forAccount, contractAddress, 0, null, function (status, results) {
 			//send the response back to the html code...
 			console.log(JSON.stringify(results));
 			res.json(results);
@@ -639,14 +640,14 @@ function getTxDecodedInput(txhash) {
 
 function readJsonFile(filepath, encoding) {
 	if (typeof (encoding) == 'undefined') {
-	  encoding = 'utf8';
+		encoding = 'utf8';
 	}
 	var file = fs.readFileSync(filepath, encoding);
 	return JSON.parse(file);
-  }
-  
-  function getJsonFromFile(file) {
+}
+
+function getJsonFromFile(file) {
 	var filepath = "public/" + file;
 	return readJsonFile(filepath);
-  }
+}
 

@@ -368,22 +368,23 @@ function getTransactionsByAccount(myaccount, contradd, startBlockNumber, endBloc
 						} else {
 							if (resp != null && resp.transactions != null) {
 								resp.transactions.forEach(function (e) {
-									if (myaccount == e.from || contradd == e.to) {
-
-										delete e.nonce;
-										delete e.blockHash;
-										delete e.transactionIndex;
-										delete e.value;
-										delete e.gasPrice;
-										delete e.gas;
-										var gotinput = "";
-										if (e.input != 'undefined') {
-											gotinput = abiDecoder.decodeMethod(e.input);
+									if (e.to != null) {
+										if (myaccount.ignoreCase == e.from.ignoreCase || contradd.ignoreCase == e.to.ignoreCase) {
+											delete e.nonce;
+											delete e.blockHash;
+											delete e.transactionIndex;
+											delete e.value;
+											delete e.gasPrice;
+											delete e.gas;
+											var gotinput = "";
+											if (e.input != 'undefined') {
+												gotinput = abiDecoder.decodeMethod(e.input);
+											}
+											e.input = gotinput;
+											results[ii] = e;
+											ii++;
+											console.log(JSON.stringify(e));
 										}
-										e.input = gotinput;
-										results[ii] = e;
-										ii++;
-										console.log(JSON.stringify(e));
 									}
 								});
 							}
@@ -403,7 +404,7 @@ app.get('/api/txn/:address', function (req, res) {
 	if (useProvider == "local") {
 		console.log('Fetching transactions for contract ' + contractAddress);
 
-		getTransactionsByAccount(forAccount, contractAddress, 0, null, function(status, data) {
+		getTransactionsByAccount(forAccount, contractAddress, 0, null, function (status, data) {
 			//send the response back to the html code...
 			console.log("Got the transactions as below...." + JSON.stringify(results));
 			res.json(results);
